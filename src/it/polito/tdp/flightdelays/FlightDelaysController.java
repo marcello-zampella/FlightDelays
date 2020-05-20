@@ -9,6 +9,7 @@ package it.polito.tdp.flightdelays;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,22 +42,37 @@ public class FlightDelaysController {
     private Button btnAnalizza; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBoxAeroportoPartenza"
-    private ComboBox<String> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
+    private ComboBox<Airport> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBoxAeroportoArrivo"
-    private ComboBox<String> cmbBoxAeroportoArrivo; // Value injected by FXMLLoader
+    private ComboBox<Airport> cmbBoxAeroportoArrivo; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAeroportiConnessi"
     private Button btnAeroportiConnessi; // Value injected by FXMLLoader
 
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
-
+    	model.creaGrafo(Integer.parseInt(this.distanzaMinima.getText()));
+    	this.cmbBoxAeroportoArrivo.getItems().addAll(model.getAllVertex());
+    	this.cmbBoxAeroportoPartenza.getItems().addAll(model.getAllVertex());
     }
 
     @FXML
     void doTestConnessione(ActionEvent event) {
-
+    	int idArrivo=this.cmbBoxAeroportoArrivo.getValue().getId();
+    	int idPartenza=this.cmbBoxAeroportoPartenza.getValue().getId();
+    	
+    	if(model.testConnessione(idArrivo, idPartenza)) {
+    		String s="";
+    		this.txtResult.appendText("Il percorso esiste \n");
+    		for(Airport a: model.trovaPercorso(idArrivo, idPartenza)) {
+    			s+=a.getAirportName()+"\n";
+    		}
+    		this.txtResult.appendText(s);
+    	}
+    	else
+    		this.txtResult.setText("il percorso selezionato non esiste");
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
